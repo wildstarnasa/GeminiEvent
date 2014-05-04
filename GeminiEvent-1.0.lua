@@ -48,7 +48,8 @@ end
 
 function GeminiEvent.events:OnUnused(target, eventName)
 	Apollo.RemoveEventHandler(eventName, self)
-	self[eventName] = nil
+	local strHandler = kStrEventPrefx .. eventName
+	self[strHandler] = nil
 end
 
 -- APIs and registry for IPC messages, using CallbackHandler lib
