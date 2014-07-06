@@ -2,7 +2,7 @@
 -- All dispatching is done using **CallbackHandler-1.0**. GeminiEvent is a simple wrapper around
 -- CallbackHandler, and dispatches all game events or addon message to the registrees.
 --
--- **Gemini:Event-1.0** can be embeded into your addon, either explicitly by calling GeminiEvent:Embed(MyAddon) or by 
+-- **Gemini:Event-1.0** can be embeded into your addon, either explicitly by calling GeminiEvent:Embed(MyAddon) or by
 -- specifying it as an embeded library in your AceAddon. All functions will be available on your addon object
 -- and can be accessed directly, without having to explicitly call GeminiEvent itself.\\
 -- It is recommended to embed GeminiEvent, otherwise you'll have to specify a custom `self` on all calls you
@@ -21,12 +21,15 @@ local GeminiEvent = APkg and APkg.tPackage or {}
 local kStrEventPrefx = "_EVT_"
 
 -- Lua APIs
-local pairs = pairs
+local pairs, loadstring, error = pairs, loadstring, error
+
+-- Wildstar APIs
+local Apollo = Apollo
 
 GeminiEvent.embeds = GeminiEvent.embeds or {} -- what objects embed this lib
 local CallbackHandler = Apollo.GetPackage("Gemini:CallbackHandler-1.0").tPackage
 
-function BuildDispatcher(strEventName)
+local function BuildDispatcher(strEventName)
 	local funcStr = "return (function (self, ...) self:Fire('" .. strEventName .. "', ...) end)"
 
 	-- Convert this string into a function
@@ -36,7 +39,7 @@ function BuildDispatcher(strEventName)
 end
 
 -- APIs and registry for Apollo events, using CallbackHandler lib
-GeminiEvent.events = CallbackHandler:New(GeminiEvent, 
+GeminiEvent.events = CallbackHandler:New(GeminiEvent,
 	"RegisterEvent", "UnregisterEvent", "UnregisterAllEvents")
 GeminiEvent.SendEvent = Event_FireGenericEvent
 
@@ -53,7 +56,7 @@ function GeminiEvent.events:OnUnused(target, eventName)
 end
 
 -- APIs and registry for IPC messages, using CallbackHandler lib
-GeminiEvent.messages = CallbackHandler:New(GeminiEvent, 
+GeminiEvent.messages = CallbackHandler:New(GeminiEvent,
 	"RegisterMessage", "UnregisterMessage", "UnregisterAllMessages"
 )
 GeminiEvent.SendMessage = GeminiEvent.messages.Fire
